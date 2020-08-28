@@ -1,0 +1,15 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Categories</h2>
+        <ul>
+        {% for row in categories %}
+            {% if row.category == '' %}
+                <li><a href="{% url 'category' 'none' %}">No Category</a> ({{ row.count }}) </li>
+            {% else %}
+                <li><a href="{% url 'category' row.category %}">{{ row.category }}</a> ({{ row.count }})</li>
+            {% endif %}                  
+        {% empty %}           
+        {% endfor %}
+        </ul>
+{% endblock %}

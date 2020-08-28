@@ -1,0 +1,112 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Listing: {{ listing.title }}</h2>
+<form action="" method="POST">
+    {% csrf_token %}
+    <div>
+        {% if watching %}
+        <button class="btn btn-secondary btn-sm" name="watchlist" type="submit">Watchlist</button>
+        {% else %}
+        <button class="btn btn-light btn-sm" name="watchlist" type="submit">Watchlist</button>
+        {% endif %}
+        
+    </div>
+    <div style="height: 350px;">
+        <img src="{{ listing.image }}" style="height: 100%; width: 100%; object-fit: contain;  " alt="">
+    </div>
+    <div>
+        <p>
+            {{ listing.description }}
+        </p>
+        
+    </div>
+    <div>
+        <p>
+            <b class="h3">${{ listing.price }}</b>
+        </p>
+        
+    </div>
+{% if listing.state == 'active' %}
+    {% if listing.listedby.id != user.id %}
+    <div>
+        <small class="text-secondary">{{ bids }} bid(s) so far. 
+            {% if yoursbid %}
+            You bid is the current bid
+            {% endif %}
+        </small>
+        <p>
+            <input class="form-control" type="number" name="newbid" placeholder="Bid" value="{{ newprice }}" required> 
+        </p>        
+    </div>
+    <div>
+        <input class="btn btn-primary" type="submit" name="bidbutton" value="Place Bid">
+    </div>
+    {% else %}
+        <small class="text-secondary">{{ bids }} bid(s) so far. 
+        </small>
+        <div>
+            <input class="btn btn-danger" type="submit" name="closelisting" value="Close Listing">
+        </div>
+    {% endif %}
+{% else %}
+    {% if lastbid.user.id == user.id %}
+    <div class="alert alert-success" role="alert">
+        You won it!
+    </div>
+    {% else %}
+    <div class="alert alert-danger" role="alert">
+        Listing closed
+    </div>
+    {% endif %}
+{% endif %}
+
+    <div>
+        <h3>Details</h3>
+        <ul>
+            <li>Listed by: <a href="#">{{ listing.listedby.username }}</a> </li>
+            <li>Category: 
+                {% if listing.category != '' %}
+                    {{ listing.category }}
+                {% else %}
+                    No Category Listed
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+    <div class="comments-section">
+        <h3>Comments</h3>
+        
+        
+
+        {% for comment in comments %}
+        <div class="comment mb-1">
+            <div class="row no-gutters border rounded" >
+                <div class="col-3 p-2">
+                    Posted by: {{ comment.user.username }} <br>
+                    <small class="text-secondary">{{ comment.date }}</small>
+                </div>
+                <div class="col-9 p-2">
+                    {{ comment.content }}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <b>no comments</b>
+        {% endfor %}
+        <div>
+            <h4>New comment</h4>
+            <div class="row">
+                <div class="col-10">
+                    <textarea name="comment" class="form-control" placeholder="comment"></textarea>
+                </div>
+                <div class="col-2 align-self-center">
+                    <input class="btn btn-primary form-control" type="submit" name="postbutton" value="Post">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+        
+    
+{% endblock %}
